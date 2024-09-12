@@ -12,8 +12,7 @@ class TaskStatusSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        TaskStatus::factory()->create([
+        /*TaskStatus::factory()->create([
             'name' => 'Запланирована',
         ]);
 
@@ -39,6 +38,6 @@ class TaskStatusSeeder extends Seeder
     
         TaskStatus::factory()->create([
             'name' => 'Проконтролирована',
-        ]);
+        ]);*/
     }
 }
