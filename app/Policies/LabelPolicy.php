@@ -2,12 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Task;
+use App\Models\Label;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
-use Illuminate\Support\Facades\Auth;
 
-class TaskPolicy
+class LabelPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -20,7 +19,7 @@ class TaskPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Task $task): bool
+    public function view(User $user, Label $label): bool
     {
         return true;
     }
@@ -36,7 +35,7 @@ class TaskPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Task $task): bool
+    public function update(User $user, Label $label): bool
     {
         return Auth::check();
     }
@@ -44,23 +43,23 @@ class TaskPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Task $task): bool
+    public function delete(User $user, Label $label): bool
     {
-        return $task->createdBy->is($user);
+        return Auth::check();
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Task $task): bool
+    public function restore(User $user, Label $label): bool
     {
-        return $task->createdBy->is($user);
+        return Auth::check();
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Task $task): bool
+    public function forceDelete(User $user, Label $label): bool
     {
         return false;
     }

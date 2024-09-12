@@ -41,5 +41,19 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
         }
+
+        $labels =  Yaml::parseFile(database_path('seeds/labels.yaml'));
+        foreach ($labels as $label) {
+            Label::firstOrCreate([
+                'name' => $label['name'],
+                'description' => $label['description']
+            ]);
+        }
+
+        $tasks = Task::all();
+        foreach ($tasks as $task) {
+            $labels = Label::all()->random(random_int(0, 3))->unique();
+            $task->labels()->attach($labels);
+        }
     }
 }
