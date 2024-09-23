@@ -17,6 +17,9 @@ lint-fix:
 	composer exec --verbose phpcbf -- --standard=PSR12 app routes
 
 test-coverage:
+	composer exec --verbose phpunit tests -- --coverage-clover build/logs/clover.xml
+
+test-coverage-xdebug_mode:
 	XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
 
 test:
