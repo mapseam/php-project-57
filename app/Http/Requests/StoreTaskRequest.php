@@ -17,12 +17,24 @@ class StoreTaskRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => 'required|string|unique:App\Models\Task',
+            'description' => '',
+            'status_id' => 'required|exists:App\Models\TaskStatus,id',
+            'created_by_id' => 'exists:App\Models\User,id',
+            'assigned_to_id' => 'nullable|exists:App\Models\User,id',
+            'labels' => '',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'name.unique' => __('strings.task exists'),
         ];
     }
 }

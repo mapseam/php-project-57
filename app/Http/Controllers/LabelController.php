@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Label;
+use Illuminate\Http\Request;
 use App\Http\Requests\StoreLabelRequest;
 use App\Http\Requests\UpdateLabelRequest;
-use App\Models\Label;
 
 class LabelController extends Controller
 {
@@ -12,15 +13,13 @@ class LabelController extends Controller
     {
         $this->authorizeResource(Label::class, 'label');
     }
-
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $labels = Label::paginate(15);
-
-        return view('label.index', compact('labels'));
+        $labels = Label::all();
+        return view('Label.index', compact('labels'));
     }
 
     /**
@@ -29,8 +28,7 @@ class LabelController extends Controller
     public function create()
     {
         $label = new Label();
-
-        return view('label.create', compact('label'));
+        return view('Label.create', compact('label'));
     }
 
     /**
@@ -38,31 +36,13 @@ class LabelController extends Controller
      */
     public function store(StoreLabelRequest $request)
     {
-        $validated = $this->validate(
-            $request,
-            [
-                'name' => 'required|unique:labels',
-                'description' => 'nullable|string'
-            ],
-            [
-                'name.unique' => __('labels.validation.unique')
-            ]
-        );
+        $data = $request->validated();
 
-        $label = new Label();
-        $label->fill($validated);
-        $label->save();
-        flash(__('flashes.labels.store'))->success();
+        Label::create($data);
+
+        flash(__('messages.label.created'))->success();
 
         return redirect()->route('labels.index');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Label $label)
-    {
-        return view('label.show', compact('label'));
     }
 
     /**
@@ -70,7 +50,7 @@ class LabelController extends Controller
      */
     public function edit(Label $label)
     {
-        return view('label.edit', compact('label'));
+        return view('Label.edit', compact('label'));
     }
 
     /**
@@ -78,20 +58,11 @@ class LabelController extends Controller
      */
     public function update(UpdateLabelRequest $request, Label $label)
     {
-        $validated = $this->validate(
-            $request,
-            [
-                'name' => 'required|unique:labels,name,' . $label->id,
-                'description' => 'nullable|string'
-            ],
-            [
-                'name.unique' => __('labels.validation.unique')
-            ]
-        );
+        $data = $request->validated();
 
-        $label->fill($validated);
-        $label->save();
-        flash(__('flashes.labels.updated'))->success();
+        $label->update($data);
+
+        flash(__('messages.label.modified'))->success();
 
         return redirect()->route('labels.index');
     }
@@ -102,13 +73,13 @@ class LabelController extends Controller
     public function destroy(Label $label)
     {
         if ($label->tasks()->exists()) {
-            flash(__('flashes.labels.error'))->error();
-            return back();
-        }
+            flash(__('messages.label.deleted.error'))->error();
+        } else {
+            $label->delete();
 
-        $label->delete();
+            flash(__('messages.label.deleted'))->success();
+        };
 
-        flash(__('flashes.labels.deleted'))->success();
         return redirect()->route('labels.index');
     }
 }

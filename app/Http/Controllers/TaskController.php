@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreTaskRequest;
-use App\Http\Requests\UpdateTaskRequest;
-use App\Models\TaskStatus;
-use App\Models\User;
 use App\Models\Task;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
-use Illuminate\Validation\Rule;
+use App\Models\User;
+use App\Models\TaskStatus;
+use App\Models\Label;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 
 class TaskController extends Controller
 {
@@ -18,32 +19,34 @@ class TaskController extends Controller
     {
         $this->authorizeResource(Task::class, 'task');
     }
-
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        $tasks = QueryBuilder::for(Task::class)
-        ->allowedFilters([
-            'name',
-            AllowedFilter::exact('status_id'),
-            AllowedFilter::exact('created_by_id'),
-            AllowedFilter::exact('assigned_to_id'),
-        ])
-        ->orderBy('id')
-        ->paginate(15);
+        $users = User::pluck('name', 'id');
 
-        $taskStatusesForFilter = TaskStatus::pluck('name', 'id');
-        $usersForFilter = User::pluck('name', 'id');
-        $filter = $request->input('filter');
-        
-        return view('task.index', compact(
-            'tasks',
-            'taskStatusesForFilter',
-            'usersForFilter',
-            'filter'
-        ));
+        $taskStatuses = TaskStatus::select('name', 'id')->pluck('name', 'id');
+
+        $tasks = QueryBuilder::for(Task::class)
+            ->allowedFilters([
+                'name',
+                AllowedFilter::exact('status_id'),
+                AllowedFilter::exact('created_by_id'),
+                AllowedFilter::exact('assigned_to_id'),
+            ])
+            ->orderBy('id')
+            ->paginate(15);
+
+            return view('Task.index', [
+                'tasks' => $tasks,
+                'users' => $users,
+                'taskStatuses' => $taskStatuses,
+                'activeFilter' => request()->get('filter', [
+                    'status_id' => '',
+                    'assigned_to_id' => '',
+                    'created_by_id' => ''
+                ])]);
     }
 
     /**
@@ -51,17 +54,11 @@ class TaskController extends Controller
      */
     public function create()
     {
-        $task = new Task();
-        $taskStatuses = TaskStatus::all();
-        $users = User::all();
-        $labels = Label::all();
-        
-        return view('task.create', compact(
-            'task',
-            'taskStatuses',
-            'users',
-            'labels'
-        ));
+        $taskStatuses = TaskStatus::select('name', 'id')->pluck('name', 'id');
+        $users = User::select('name', 'id')->pluck('name', 'id');
+        $labels = Label::select('name', 'id')->pluck('name', 'id');
+
+        return view('Task.create', compact('taskStatuses', 'users', 'labels'));
     }
 
     /**
@@ -69,32 +66,19 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        $validated = $this->validate(
-            $request,
-            [
-                'name' => 'required|unique:tasks',
-                'status_id' => 'required|exists:task_statuses,id',
-                'description' => 'nullable|string',
-                'assigned_to_id' => 'nullable|integer',
-                'label' => 'nullable|array',
-            ],
-            [
-                'name.unique' => __('tasks.validation.unique')
-            ]
-        );
+        $request->validated();
 
-        /** @var \App\Models\User $currentUser */
-        $currentUser = Auth::user();
-        $task = $currentUser->createdTasks()->create($validated);
+        $data = $request->except('labels');
+        $data['created_by_id'] = optional(auth()->user())->id;
 
-        $labels = collect($request->input('labels'))->whereNotNull();
-        $task->save();
+        $labels = collect($request->input('labels'))
+        ->filter(fn($label) => $label !== null);
 
-        if ($labels->isNotEmpty()) {
-            $task->labels()->attach($labels);
-        }
+        $task = Task::create($data);
 
-        flash(__('flashes.tasks.store'))->success();
+        $task->labels()->attach($labels);
+
+        flash(__('messages.task.created'))->success();
 
         return redirect()->route('tasks.index');
     }
@@ -104,7 +88,9 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        return view('task.show', compact('task'));
+        $labels = $task->labels;
+
+        return view('Task.show', compact('task', 'labels'));
     }
 
     /**
@@ -113,15 +99,11 @@ class TaskController extends Controller
     public function edit(Task $task)
     {
         $taskStatuses = TaskStatus::all();
-        $users = User::all();
-        $labels = Label::all();
-        
-        return view('task.edit', compact(
-            'task',
-            'taskStatuses',
-            'users',
-            'labels'
-        ));
+        $users = User::select('name', 'id')->pluck('name', 'id');
+        $taskLabels = $task->labels;
+        $labels = Label::select('name', 'id')->pluck('name', 'id');
+
+        return view('Task.edit', compact('task', 'taskStatuses', 'users', 'labels', 'taskLabels'));
     }
 
     /**
@@ -129,28 +111,18 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        $validated = $this->validate(
-            $request,
-            [
-                'name' => 'required|unique:tasks,name,' . $task->id,
-                'description' => 'nullable|string',
-                'assigned_to_id' => 'nullable|integer',
-                'status_id' => 'required|integer',
-                'label' => 'nullable|array',
-            ],
-            [
-                'name.unique' => __('tasks.validation.unique')
-            ]
-        );
+        $request->validated();
 
-        $labels = collect($request->input('labels'));
+        $data = $request->except('labels');
 
-        $task->fill($validated);
-        $task->save();
+        $labels = collect($request->input('labels'))
+            ->filter(fn($label) => $label !== null);
+
+        $task->update($data);
 
         $task->labels()->sync($labels);
 
-        flash(__('flashes.tasks.updated'))->success();
+        flash(__('messages.task.updated'))->success();
 
         return redirect()->route('tasks.index');
     }
@@ -162,7 +134,8 @@ class TaskController extends Controller
     {
         $task->labels()->detach();
         $task->delete();
-        flash(__('flashes.tasks.deleted'))->success();
+
+        flash(__('messages.task.deleted'), 'success');
 
         return redirect()->route('tasks.index');
     }

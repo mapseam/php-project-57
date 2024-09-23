@@ -12,15 +12,7 @@ class TaskStatusPolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
-    {
-        return true;
-    }
-
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, TaskStatus $taskStatus): bool
+    public function viewAny(?User $user): bool
     {
         return true;
     }
@@ -47,21 +39,5 @@ class TaskStatusPolicy
     public function delete(User $user, TaskStatus $taskStatus): bool
     {
         return Auth::check();
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, TaskStatus $taskStatus): bool
-    {
-        return Auth::check();
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, TaskStatus $taskStatus): bool
-    {
-        return false;
     }
 }

@@ -17,12 +17,23 @@ class UpdateTaskRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => 'required|unique:tasks,name,' . $this->task->id,
+            'description' => '',
+            'status_id' => 'required|exists:App\Models\TaskStatus,id',
+            'assigned_to_id' => 'nullable|exists:App\Models\User,id',
+            'labels' => '',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'name.unique' => __('strings.task exists'),
         ];
     }
 }

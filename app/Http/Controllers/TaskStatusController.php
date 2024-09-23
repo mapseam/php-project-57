@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTaskStatusRequest;
 use App\Http\Requests\UpdateTaskStatusRequest;
 use App\Models\TaskStatus;
+use Illuminate\Support\Facades\Auth;
 
 class TaskStatusController extends Controller
 {
@@ -12,15 +13,13 @@ class TaskStatusController extends Controller
     {
         $this->authorizeResource(TaskStatus::class, 'task_status');
     }
-
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $taskStatuses = TaskStatus::paginate(15);
-
-        return view('task_status.index', compact('taskStatuses'));
+        $taskStatuses = TaskStatus::all();
+        return view('TaskStatus.index', compact('taskStatuses'));
     }
 
     /**
@@ -29,8 +28,7 @@ class TaskStatusController extends Controller
     public function create()
     {
         $taskStatus = new TaskStatus();
-
-        return view('task_status.create', compact('taskStatus'));
+        return view('TaskStatus.create', compact('taskStatus'));
     }
 
     /**
@@ -38,38 +36,22 @@ class TaskStatusController extends Controller
      */
     public function store(StoreTaskStatusRequest $request)
     {
-        $validated = $this->validate(
-            $request,
-            [
-                'name' => 'required|unique:task_statuses'
-            ],
-            [
-                'name.unique' => __('task_statuses.validation.unique')
-            ]
-        );
+        $data = $request->validated();
 
-        $taskStatus = new TaskStatus();
-        $taskStatus->fill($validated);
-        $taskStatus->save();
-        flash(__('flashes.task_statuses.store'))->success();
+        TaskStatus::create($data);
+
+        flash(__('messages.status.created'))->success();
 
         return redirect()->route('task_statuses.index');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(TaskStatus $taskStatus)
-    {
-        return view('task_status.show', compact('taskStatus'));
-    }
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(TaskStatus $taskStatus)
     {
-        return view('task_status.edit', compact('taskStatus'));
+        return view('TaskStatus.edit', compact('taskStatus'));
     }
 
     /**
@@ -77,19 +59,11 @@ class TaskStatusController extends Controller
      */
     public function update(UpdateTaskStatusRequest $request, TaskStatus $taskStatus)
     {
-        $validatedData = $this->validate(
-            $request,
-            [
-                'name' => 'required|unique:task_statuses,name,' . $taskStatus->id
-            ],
-            [
-                'name.unique' => __('task_statuses.validation.unique')
-            ]
-        );
+        $data = $request->validated();
 
-        $taskStatus->fill($validatedData);
-        $taskStatus->save();
-        flash(__('flashes.task_statuses.updated'))->success();
+        $taskStatus->update($data);
+
+        flash(__('messages.status.modified'))->success();
 
         return redirect()->route('task_statuses.index');
     }
@@ -100,13 +74,12 @@ class TaskStatusController extends Controller
     public function destroy(TaskStatus $taskStatus)
     {
         if ($taskStatus->tasks()->exists()) {
-            flash(__('flashes.task_statuses.error'))->error();
-            return back();
-        }
+            flash(__('messages.status.deleted.error'))->error();
+        } else {
+            $taskStatus->delete();
 
-        $taskStatus->delete();
-
-        flash(__('flashes.task_statuses.deleted'))->success();
+            flash(__('messages.status.deleted'))->success();
+        };
 
         return redirect()->route('task_statuses.index');
     }
