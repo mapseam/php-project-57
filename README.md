@@ -5,7 +5,7 @@
 
 ### Project description
 
-[Task Manager](https://task-manager-php.onrender.com/) is a web application that allows various users to create, manage and track tasks. Each task is assigned a status and can have an optional executor and labels (tags). Registration and authentication are required to use the system. Only authenticated users are authorized to create and edit tasks. Once a task is established and appears in the overall list, it can be edited and its status updated by all users, but only the original creator has the ability to delete it.
+[Task Manager](https://php-project-57-7ghb.onrender.com) is a web application that allows various users to create, manage and track tasks. Each task is assigned a status and can have an optional executor and labels (tags). Registration and authentication are required to use the system. Only authenticated users are authorized to create and edit tasks. Once a task is established and appears in the overall list, it can be edited and its status updated by all users, but only the original creator has the ability to delete it.
 
 ### Requirements
 
