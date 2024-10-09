@@ -5,6 +5,8 @@
 /public/storage
 /storage/*.key
 /vendor
+/vndr
+composer.lock.bak
 .env
 .env.backup
 .env.production

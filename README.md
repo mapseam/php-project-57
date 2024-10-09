@@ -6,12 +6,14 @@
 ### Project description
 
 [Task Manager](https://php-project-57-7ghb.onrender.com) is a web application that allows various users to create, manage and track tasks. Each task is assigned a status and can have an optional executor and labels (tags). Registration and authentication are required to use the system. Only authenticated users are authorized to create and edit tasks. Once a task is established and appears in the overall list, it can be edited and its status updated by all users, but only the original creator has the ability to delete it.
+(Note: On the free tariff, access to the database is given for 1 month. Expired 24.10.2024)
 
 ### Requirements
 
-- PHP >= 8.1
+- PHP >= 8.3
 - Composer
 - PostgreSQL
+- Node.js >= 14
 
 ### Installation
 
@@ -21,6 +23,7 @@ git clone git@github.com:mapseam/php-project-57.git
 
 cd php-project-57
 ```
+
 Install the app
 ```
 make setup
