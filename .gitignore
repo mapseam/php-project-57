@@ -6,6 +6,7 @@
 /storage/*.key
 /vendor
 /vndr
+composer.json.bak
 composer.lock.bak
 .env
 .env.backup
