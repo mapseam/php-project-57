@@ -5,12 +5,12 @@
 <div class="grid col-span-full">
         <h1 class="mb-5 max-w-2xl text-4xl md:text-4xl xl:text-5xl">{{ __('strings.edit task') }}</h1>
         <div>
-            {{ Form::open(['route' => ['tasks.update', $task], 'method' => 'patch']) }}
+            {{ html()->modelForm($task, 'PATCH', route('tasks.update', $task->id))->open() }}
             <div>
-                {{ Form::label("name", __('strings.name')) }}
+                {{ html()->label(__('strings.name'))->for('name') }}
             </div>
             <div class="mt-2">
-                {{ Form::text('name', $task->name, ['class' => 'rounded border border-gray-300 w-1/3 p-2', 'value' => old('name')]) }}
+                {{ html()->input('text', 'name', $task->name)->value(old('name'))->class('rounded border border-gray-300 w-1/3 p-2') }}
             </div>
             @error('name')
             <div class="text-rose-600">
@@ -19,10 +19,10 @@
             @enderror
 
             <div class="mt-2">
-                {{ Form::label("description", __('strings.description')) }}
+                {{ html()->label(__('strings.description'))->for('description') }}
             </div>
             <div class="mt-2">
-                {{ Form::textarea('description', $task->description, ['class' => 'rounded border border-gray-300 w-1/3 h-32 p-2', 'value' => old('description'), 'rows' => 10, 'cols' => 50]) }}
+                {{ html()->textarea('description', $task->description)->value(old('description'))->rows(10)->cols(50)->class('rounded border border-gray-300 w-1/3 h-32 p-2') }}
             </div>
             @error('description')
             <div class="text-rose-600">
@@ -31,10 +31,10 @@
             @enderror
 
             <div class="mt-2">
-                {!! Form::label("status_id", __('strings.status')) !!}
+                {!! html()->label(__('strings.status'))->for('status_id') !!}
             </div>
             <div class="mt-2">
-                {{ Form::select('status_id', $taskStatuses->pluck('name', 'id'), $task->status->id, ['class' => 'rounded border border-gray-300 w-1/3 p-2 bg-white', 'placeholder' => '----------']) }}
+                {{ html()->select('status_id', $taskStatuses->pluck('name', 'id'), $task->status->id)->placeholder('----------')->class('rounded border border-gray-300 w-1/3 p-2 bg-white') }}
 
             </div>
             @error('status_id')
@@ -44,13 +44,13 @@
             @enderror
 
             <div class="mt-2">
-                {{ Form::label("assigned_to_id", __('strings.executor')) }}
+                {{ html()->label(__('strings.executor'))->for('assigned_to_id') }}
             </div>
             <div class="mt-2">
                 @if ($task->assigned_to_user == null)
-                    {{ Form::select('assigned_to_id', $users, null, ['class' => 'rounded border border-gray-300 w-1/3 p-2 bg-white', 'placeholder' => '----------']) }}
+                    {{ html()->select('assigned_to_id', $users, null)->placeholder('----------')->class('rounded border border-gray-300 w-1/3 p-2 bg-white') }}
                 @else
-                    {{ Form::select('assigned_to_id', $users, $task->assigned_to_user->id, ['class' => 'rounded border border-gray-300 w-1/3 p-2 bg-white', 'placeholder' => '----------']) }}
+                    {{ html()->select('assigned_to_id', $users, $task->assigned_to_user->id)->placeholder('----------')->class('rounded border border-gray-300 w-1/3 p-2 bg-white') }}
                 @endif
             </div>
             
@@ -61,16 +61,16 @@
             @enderror
 
             <div class="mt-2">
-                {{ Form::label("labels", __('strings.labels')) }}
+                {{ html()->label(__('strings.labels'))->for('labels[]') }}
             </div>
             <div class="mt-2">
-                {{ Form::select('labels[]', $labels, $taskLabels, ['class' => 'rounded border border-gray-300 w-1/3 p-2 bg-white', 'multiple' => true, 'placeholder' => '']) }}
+                {{ html()->select('labels[]', $labels, $taskLabels)->multiple()->placeholder('')->class('rounded border border-gray-300 w-1/3 p-2 bg-white') }}
             </div>
 
             <div class="mt-2">
-                {{ Form::submit(__('strings.update'), ['class' => 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded']) }}
+                {{ html()->submit(__('strings.update'))->class('bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded') }}
             </div>
-            {{ Form::close() }}
+            {{ html()->closeModelForm() }}
         </div>
     </div>
 

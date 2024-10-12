@@ -6,22 +6,22 @@
             
             <div class="w-full flex items-center">
                 <div>
-                    {{Form::open(['route' => 'tasks.index', 'method' => 'GET'])}}
+                    {{ html()->modelForm($tasks, 'GET', route('tasks.index'))->open() }}
                     <div class="flex">
                         <div>
-                            {{Form::select('filter[status_id]', $taskStatuses, $filter['status_id'] ?? null, ['placeholder' =>  __('strings.status'), 'class' => 'rounded border-gray-300'])}}
+                            {{ html()->select('filter[status_id]', $taskStatuses, $filter['status_id'] ?? null)->placeholder(__('strings.status'))->class('rounded border-gray-300') }}
                         </div>
                         <div>
-                            {{Form::select('filter[created_by_id]', $users, $filter['created_by_id'] ?? null, ['placeholder' =>  __('strings.author'), 'class' => 'ml-2 rounded border-gray-300'])}}
+                            {{ html()->select('filter[created_by_id]', $users, $filter['created_by_id'] ?? null)->placeholder(__('strings.author'))->class('ml-2 rounded border-gray-300') }}
                         </div>
                         <div>
-                            {{Form::select('filter[assigned_to_id]', $users, $filter['assigned_to_id'] ?? null, ['placeholder' =>  __('strings.executor'), 'class' => 'ml-2 rounded border-gray-300'])}}
+                            {{ html()->select('filter[assigned_to_id]', $users, $filter['assigned_to_id'] ?? null)->placeholder(__('strings.executor'))->class('ml-2 rounded border-gray-300') }}
                         </div>
                         <div>
-                            {{ Form::submit( __('strings.apply'), ['class' => 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2']) }}
+                            {{ html()->submit(__('strings.apply'))->class('bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2') }}
                         </div>    
                     </div>
-                    {{Form::close()}}
+                    {{ html()->closeModelForm() }}
                 </div>    
 
                 @auth

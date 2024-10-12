@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Task;
-use Illuminate\Http\Request;
-use Spatie\QueryBuilder\QueryBuilder;
-use Spatie\QueryBuilder\AllowedFilter;
 use App\Models\User;
+use App\Models\Task;
 use App\Models\TaskStatus;
 use App\Models\Label;
+use Spatie\QueryBuilder\QueryBuilder;
+use Spatie\QueryBuilder\AllowedFilter;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 
@@ -54,11 +54,12 @@ class TaskController extends Controller
      */
     public function create()
     {
+        $task = new Task();
         $taskStatuses = TaskStatus::select('name', 'id')->pluck('name', 'id');
         $users = User::select('name', 'id')->pluck('name', 'id');
         $labels = Label::select('name', 'id')->pluck('name', 'id');
 
-        return view('Task.create', compact('taskStatuses', 'users', 'labels'));
+        return view('Task.create', compact('task', 'taskStatuses', 'users', 'labels'));
     }
 
     /**

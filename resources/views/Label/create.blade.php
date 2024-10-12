@@ -5,12 +5,12 @@
 <div class="grid col-span-full">
         <h1 class="mb-5 max-w-2xl text-4xl md:text-4xl xl:text-5xl">{{ __('strings.create label') }}</h1>
         <div>
-            {{ Form::open(['route' => 'labels.store']) }}
+            {{ html()->modelForm($label, 'POST', route('labels.store'))->open() }}
             <div>
-                {{ Form::label("name", __('strings.name')) }}
+                {{ html()->label(__('strings.name'))->for('name') }}
             </div>
             <div class="mt-2">
-                {{ Form::text('name', old('name'), ['class' => 'rounded border border-gray-300 w-1/3 p-2', 'value' => old('name')]) }}
+                {{ html()->input('text', 'name')->value(old('name'))->class('rounded border border-gray-300 w-1/3 p-2')->value(old('name')) }}
             </div>
             @error('name')
             <div class="text-rose-600">
@@ -18,10 +18,10 @@
             </div>
             @enderror
             <div class="mt-2">
-                {{ Form::label("description", __('strings.description')) }}
+                {{ html()->label(__('strings.description'))->for('description') }}`
             </div>
             <div class="mt-2">
-                {{ Form::textarea('description', old('description'), ['class' => 'rounded border border-gray-300 w-1/3 h-32 p-2', 'value' => old('description'), 'rows' => 10, 'cols' => 50]) }}
+                {{ html()->textarea('description')->value(old('description'))->rows(10)->cols(50)->class('rounded border border-gray-300 w-1/3 h-32 p-2')->value(old('description')) }}
 
             </div>
             @error('description')
@@ -32,9 +32,9 @@
 
 
             <div class="mt-2">
-                {{ Form::submit(__('strings.create'), ['class' => 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded']) }}
+                {{ html()->submit(__('strings.create'))->class('bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded') }}
             </div>
-            {{ Form::close() }}
+            {{ html()->closeModelForm() }}
         </div>
     </div>
 
