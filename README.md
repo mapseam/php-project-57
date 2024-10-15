@@ -10,7 +10,7 @@
 
 ### Requirements
 
-- PHP >= 8.3
+- PHP >= 8.2
 - Composer
 - PostgreSQL
 - Node.js >= 14
