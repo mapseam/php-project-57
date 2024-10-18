@@ -38,4 +38,5 @@ Run the web server
 php artisan migrate:refresh --seed --force
 php artisan serve
 ```
+
 Open your browser and navigate to http://127.0.0.1:8000/ to view the pages
