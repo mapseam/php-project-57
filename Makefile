@@ -1,7 +1,9 @@
 PORT ?= 8000
 
-start:
-	PHP_CLI_SERVER_WORKERS=5 php -S 0.0.0.0:$(PORT) -t public
+start: 
+	php -S 0.0.0.0:$(PORT) -t public
+
+migrate:
 	php artisan migrate:fresh --force --seed
 
 install:
@@ -35,4 +37,7 @@ setup:
 	npm install
 	npm ci
 	npm run build
+
+dusk: migrate
+	php artisan dusk
 
