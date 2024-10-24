@@ -20,9 +20,4 @@ RUN composer install
 RUN npm ci
 RUN npm run build
 
-# Upgrade Chrome driver
-RUN php artisan dusk:chrome-driver
-# Start Chrome driver
-CMD ["bash", "-c", "./vendor/laravel/dusk/bin/chromedriver-linux > /dev/null 2>&1 &"]
-
 CMD ["bash", "-c", "php artisan migrate:fresh --seed --force && php artisan serve --host=0.0.0.0 --port=$PORT"]
